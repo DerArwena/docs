@@ -1,0 +1,210 @@
+---
+title: Contributing
+description: How to contribute to Sorionlib
+---
+
+## Getting started
+
+We welcome contributions to Sorionlib! This guide will help you get started.
+
+## Repository structure
+
+```
+sorionlib/
+├── src/
+│   ├── core/           # Core functionality
+│   ├── api/            # API client
+│   ├── discord/        # Discord tools
+│   ├── database/       # Database helpers
+│   ├── utils/          # Utility functions
+│   └── index.ts        # Main entry point
+├── tests/
+│   ├── unit/           # Unit tests
+│   └── integration/    # Integration tests
+├── docs/               # Documentation
+├── examples/           # Example projects
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Setting up locally
+
+1. **Fork the repository**
+
+   Click the "Fork" button on GitHub.
+
+2. **Clone your fork**
+
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/sorionlib.git
+   cd sorionlib
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+4. **Create a branch**
+
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+
+5. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+## Running tests
+
+```bash
+# Run all tests
+npm test
+
+# Run unit tests only
+npm run test:unit
+
+# Run integration tests
+npm run test:integration
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+## Code style
+
+We use ESLint and Prettier for code formatting. Run the linter before committing:
+
+```bash
+# Check for issues
+npm run lint
+
+# Auto-fix issues
+npm run lint:fix
+```
+
+### Style guidelines
+
+- Use TypeScript for all new code
+- Use `async/await` instead of callbacks
+- Use meaningful variable and function names
+- Add JSDoc comments for public APIs
+- Keep functions small and focused
+- Write tests for new features
+
+### Example code style
+
+```ts
+/**
+ * Formats a date according to the specified pattern.
+ * @param date - The date to format.
+ * @param pattern - The format pattern (e.g., "YYYY-MM-DD").
+ * @returns The formatted date string.
+ */
+export function formatDate(date: Date, pattern: string): string {
+  // Implementation
+}
+```
+
+## Pull request guidelines
+
+### Before submitting
+
+1. **Update tests** - Add or update tests for your changes
+2. **Update documentation** - Document new features or changes
+3. **Run the test suite** - Ensure all tests pass
+4. **Run the linter** - Fix any style issues
+
+### PR checklist
+
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] Linter passes
+- [ ] All tests pass
+- [ ] Commit messages are clear
+
+### Commit messages
+
+Use clear, descriptive commit messages:
+
+```
+feat: add user authentication support
+fix: resolve memory leak in event emitter
+docs: update API client documentation
+test: add tests for database helpers
+refactor: simplify error handling logic
+```
+
+Prefixes:
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `test:` - Test changes
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance tasks
+
+## Issue templates
+
+### Bug report
+
+```markdown
+**Description**
+A clear description of the bug.
+
+**Steps to reproduce**
+1. Step one
+2. Step two
+3. Step three
+
+**Expected behavior**
+What you expected to happen.
+
+**Actual behavior**
+What actually happened.
+
+**Environment**
+- Sorionlib version:
+- Node.js version:
+- Operating system:
+
+**Additional context**
+Any other relevant information.
+```
+
+### Feature request
+
+```markdown
+**Description**
+A clear description of the feature.
+
+**Use case**
+Why this feature would be useful.
+
+**Proposed solution**
+How you think it should work.
+
+**Alternatives considered**
+Other approaches you've considered.
+
+**Additional context**
+Any other relevant information.
+```
+
+## Code of conduct
+
+- Be respectful and inclusive
+- Provide constructive feedback
+- Focus on the code, not the person
+- Help others learn and grow
+
+## Getting help
+
+- **Discord** - Join our Discord server for real-time help
+- **GitHub Issues** - Report bugs or request features
+- **Discussions** - Ask questions and share ideas
+
+Thank you for contributing to Sorionlib!
