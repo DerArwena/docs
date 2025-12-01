@@ -99,7 +99,7 @@
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "/sorionlib/quickstart"
+      "href": "https://github.com/sorionlib/sorionlib"
     }
   },
   "contextual": {
