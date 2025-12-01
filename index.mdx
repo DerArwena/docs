@@ -1,97 +1,112 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "A powerful JavaScript/TypeScript library for building applications"
 ---
 
-## Setting up
+## What is Sorionlib?
 
-Get your documentation site up and running in minutes.
+Sorionlib is a powerful JavaScript/TypeScript library designed to simplify common development tasks. It provides a unified toolkit for building applications with features like API clients, Discord bot tools, database helpers, and core utilities.
 
 <Card
-  title="Start here"
+  title="Get started"
   icon="rocket"
-  href="/quickstart"
+  href="/sorionlib/quickstart"
   horizontal
 >
-  Follow our three step quickstart guide.
+  Follow our quickstart guide to start using Sorionlib in minutes.
 </Card>
 
-## Make it yours
+## Installation
 
-Design a docs site that looks great and empowers your users.
+```bash
+npm install sorionlib
+```
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+## Quick example
 
-## Create beautiful pages
+```js
+import { Sorion } from "sorionlib";
 
-Everything you need to create world-class documentation.
+const client = new Sorion({
+  logging: true,
+  prefix: "!"
+});
+
+client.start();
+```
+
+## Features
 
 <Columns cols={2}>
   <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
+    title="Core utilities"
+    icon="wrench"
+    href="/sorionlib/features/core-utilities"
   >
-    Use MDX to style your docs pages.
+    Helper functions for strings, arrays, objects, dates, and more.
   </Card>
   <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
+    title="API client"
+    icon="globe"
+    href="/sorionlib/features/api-client"
   >
-    Add sample code to demonstrate how to use your product.
+    Built-in HTTP client with authentication, retries, and error handling.
   </Card>
   <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
+    title="Discord tools"
+    icon="discord"
+    href="/sorionlib/features/discord-tools"
   >
-    Display images and other media.
+    Command builder, event system, and middleware for Discord bots.
   </Card>
   <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
+    title="Database helpers"
+    icon="database"
+    href="/sorionlib/features/database-helpers"
   >
-    Write once and reuse across your docs.
+    Simplified connections and CRUD operations for MongoDB and MariaDB.
   </Card>
 </Columns>
 
-## Need inspiration?
+## Learn more
+
+<Columns cols={2}>
+  <Card
+    title="Installation"
+    icon="download"
+    href="/sorionlib/installation"
+  >
+    Detailed installation instructions and requirements.
+  </Card>
+  <Card
+    title="Configuration"
+    icon="gear"
+    href="/sorionlib/configuration"
+  >
+    Configure Sorionlib for your project.
+  </Card>
+  <Card
+    title="Advanced guides"
+    icon="graduation-cap"
+    href="/sorionlib/advanced-guides"
+  >
+    Custom modules, performance optimization, and async patterns.
+  </Card>
+  <Card
+    title="FAQ"
+    icon="circle-question"
+    href="/sorionlib/faq"
+  >
+    Answers to frequently asked questions.
+  </Card>
+</Columns>
+
+## Community
 
 <Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
+  title="Join our Discord"
+  icon="discord"
+  href="https://discord.gg/sorionlib"
 >
-  Browse our showcase of exceptional documentation sites.
+  Get help, share your projects, and connect with other developers.
 </Card>
