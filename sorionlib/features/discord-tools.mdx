@@ -1,0 +1,206 @@
+---
+title: Discord tools
+description: Build Discord bots with Sorionlib's Discord utilities
+---
+
+## Overview
+
+Sorionlib provides tools for building Discord bots, including a command builder, event system, and middleware support.
+
+```js
+import { DiscordBot } from "sorionlib";
+
+const bot = new DiscordBot({
+  token: process.env.DISCORD_TOKEN,
+  prefix: "!"
+});
+```
+
+## Command builder
+
+Create commands with a fluent API:
+
+```js
+import { DiscordBot, Command } from "sorionlib";
+
+const bot = new DiscordBot({
+  token: process.env.DISCORD_TOKEN
+});
+
+const pingCommand = new Command()
+  .setName("ping")
+  .setDescription("Check bot latency")
+  .setHandler(async (ctx) => {
+    await ctx.reply(`Pong! ${ctx.client.ping}ms`);
+  });
+
+bot.addCommand(pingCommand);
+bot.start();
+```
+
+### Command options
+
+```js
+const greetCommand = new Command()
+  .setName("greet")
+  .setDescription("Greet a user")
+  .addOption({
+    name: "user",
+    type: "user",
+    description: "User to greet",
+    required: true
+  })
+  .addOption({
+    name: "message",
+    type: "string",
+    description: "Custom message",
+    required: false
+  })
+  .setHandler(async (ctx) => {
+    const user = ctx.options.get("user");
+    const message = ctx.options.get("message") || "Hello!";
+    await ctx.reply(`${message} ${user}`);
+  });
+```
+
+### Slash commands
+
+Register slash commands with Discord:
+
+```js
+const slashCommand = new Command()
+  .setName("info")
+  .setDescription("Get server info")
+  .setSlash(true)
+  .setHandler(async (ctx) => {
+    await ctx.reply({
+      embeds: [{
+        title: ctx.guild.name,
+        description: `Members: ${ctx.guild.memberCount}`
+      }]
+    });
+  });
+
+bot.addCommand(slashCommand);
+await bot.registerSlashCommands();
+```
+
+## Event system
+
+Listen to Discord events:
+
+```js
+bot.on("ready", () => {
+  console.log(`Logged in as ${bot.user.tag}`);
+});
+
+bot.on("messageCreate", (message) => {
+  if (message.content === "hello") {
+    message.reply("Hi there!");
+  }
+});
+
+bot.on("guildMemberAdd", (member) => {
+  const channel = member.guild.systemChannel;
+  channel.send(`Welcome ${member}!`);
+});
+```
+
+### Available events
+
+| Event | Description |
+|-------|-------------|
+| `ready` | Bot is connected and ready. |
+| `messageCreate` | A message was sent. |
+| `messageDelete` | A message was deleted. |
+| `guildMemberAdd` | A member joined a server. |
+| `guildMemberRemove` | A member left a server. |
+| `interactionCreate` | A slash command was used. |
+
+## Middleware
+
+Add middleware to process commands:
+
+```js
+// Logging middleware
+bot.use(async (ctx, next) => {
+  console.log(`Command: ${ctx.command.name} by ${ctx.author.tag}`);
+  await next();
+});
+
+// Permission check middleware
+bot.use(async (ctx, next) => {
+  if (ctx.command.adminOnly && !ctx.member.permissions.has("ADMINISTRATOR")) {
+    return ctx.reply("You need admin permissions!");
+  }
+  await next();
+});
+
+// Cooldown middleware
+const cooldowns = new Map();
+
+bot.use(async (ctx, next) => {
+  const key = `${ctx.author.id}-${ctx.command.name}`;
+  const cooldown = cooldowns.get(key);
+  
+  if (cooldown && Date.now() < cooldown) {
+    return ctx.reply("Please wait before using this command again.");
+  }
+  
+  cooldowns.set(key, Date.now() + 5000);
+  await next();
+});
+```
+
+## Example bot setup
+
+Complete example of a Discord bot:
+
+```js
+import { DiscordBot, Command } from "sorionlib";
+
+const bot = new DiscordBot({
+  token: process.env.DISCORD_TOKEN,
+  prefix: "!",
+  intents: ["Guilds", "GuildMessages", "MessageContent"]
+});
+
+// Middleware
+bot.use(async (ctx, next) => {
+  console.log(`[${new Date().toISOString()}] ${ctx.command.name}`);
+  await next();
+});
+
+// Commands
+bot.addCommand(
+  new Command()
+    .setName("ping")
+    .setDescription("Check latency")
+    .setHandler(async (ctx) => {
+      await ctx.reply(`Pong! ${ctx.client.ping}ms`);
+    })
+);
+
+bot.addCommand(
+  new Command()
+    .setName("avatar")
+    .setDescription("Get user avatar")
+    .addOption({
+      name: "user",
+      type: "user",
+      description: "Target user",
+      required: false
+    })
+    .setHandler(async (ctx) => {
+      const user = ctx.options.get("user") || ctx.author;
+      await ctx.reply(user.displayAvatarURL({ size: 512 }));
+    })
+);
+
+// Events
+bot.on("ready", () => {
+  console.log(`Bot is ready! Logged in as ${bot.user.tag}`);
+});
+
+bot.start();
+```
