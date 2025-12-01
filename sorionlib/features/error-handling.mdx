@@ -1,0 +1,224 @@
+---
+title: Error handling
+description: Custom errors and error handling in Sorionlib
+---
+
+## Overview
+
+Sorionlib provides custom error classes with detailed error codes to help you handle errors effectively.
+
+```js
+import { SorionError } from "sorionlib";
+```
+
+## Custom error classes
+
+### SorionError
+
+Base error class for all Sorionlib errors.
+
+```js
+import { SorionError } from "sorionlib";
+
+try {
+  // Some operation
+} catch (error) {
+  if (error instanceof SorionError) {
+    console.log(error.code);    // Error code
+    console.log(error.message); // Error message
+    console.log(error.details); // Additional details
+  }
+}
+```
+
+### ApiError
+
+Thrown by the API client for HTTP errors.
+
+```js
+import { ApiError } from "sorionlib";
+
+try {
+  await api.get("/users");
+} catch (error) {
+  if (error instanceof ApiError) {
+    console.log(error.status);  // HTTP status code
+    console.log(error.code);    // Error code
+    console.log(error.message); // Error message
+  }
+}
+```
+
+### DatabaseError
+
+Thrown by database helpers for connection and query errors.
+
+```js
+import { DatabaseError } from "sorionlib";
+
+try {
+  await db.connect();
+} catch (error) {
+  if (error instanceof DatabaseError) {
+    console.log(error.code);    // Error code
+    console.log(error.message); // Error message
+  }
+}
+```
+
+### ValidationError
+
+Thrown when input validation fails.
+
+```js
+import { ValidationError } from "sorionlib";
+
+try {
+  client.configure({ prefix: 123 }); // Invalid type
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.log(error.field);   // Field that failed
+    console.log(error.message); // Validation message
+  }
+}
+```
+
+## Error codes
+
+### General errors
+
+| Code | Description |
+|------|-------------|
+| `UNKNOWN_ERROR` | An unknown error occurred. |
+| `INVALID_CONFIG` | Configuration is invalid. |
+| `NOT_INITIALIZED` | Client not initialized. |
+| `ALREADY_INITIALIZED` | Client already initialized. |
+
+### API errors
+
+| Code | Description |
+|------|-------------|
+| `NETWORK_ERROR` | Network connection failed. |
+| `TIMEOUT` | Request timed out. |
+| `UNAUTHORIZED` | Authentication failed (401). |
+| `FORBIDDEN` | Access denied (403). |
+| `NOT_FOUND` | Resource not found (404). |
+| `RATE_LIMITED` | Too many requests (429). |
+| `SERVER_ERROR` | Server error (5xx). |
+
+### Database errors
+
+| Code | Description |
+|------|-------------|
+| `CONNECTION_FAILED` | Failed to connect to database. |
+| `CONNECTION_LOST` | Database connection lost. |
+| `QUERY_FAILED` | Query execution failed. |
+| `DUPLICATE_KEY` | Duplicate key violation. |
+| `INVALID_QUERY` | Query syntax is invalid. |
+
+### Validation errors
+
+| Code | Description |
+|------|-------------|
+| `REQUIRED_FIELD` | Required field is missing. |
+| `INVALID_TYPE` | Field has wrong type. |
+| `INVALID_FORMAT` | Field format is invalid. |
+| `OUT_OF_RANGE` | Value is out of allowed range. |
+
+## Handling examples
+
+### Basic error handling
+
+```js
+import { Sorion, SorionError } from "sorionlib";
+
+const client = new Sorion();
+
+try {
+  await client.start();
+} catch (error) {
+  if (error instanceof SorionError) {
+    console.error(`Error [${error.code}]: ${error.message}`);
+  } else {
+    console.error("Unexpected error:", error);
+  }
+}
+```
+
+### API error handling
+
+```js
+import { ApiClient, ApiError } from "sorionlib";
+
+const api = new ApiClient({ baseUrl: "https://api.example.com" });
+
+async function fetchUser(id) {
+  try {
+    return await api.get(`/users/${id}`);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      switch (error.code) {
+        case "NOT_FOUND":
+          console.log("User not found");
+          return null;
+        case "UNAUTHORIZED":
+          console.log("Please log in");
+          throw error;
+        case "RATE_LIMITED":
+          console.log("Too many requests, retrying...");
+          await sleep(1000);
+          return fetchUser(id);
+        default:
+          throw error;
+      }
+    }
+    throw error;
+  }
+}
+```
+
+### Database error handling
+
+```js
+import { MongoDB, DatabaseError } from "sorionlib";
+
+const db = new MongoDB({ uri: "mongodb://localhost:27017", database: "myapp" });
+
+async function createUser(data) {
+  try {
+    return await db.collection("users").create(data);
+  } catch (error) {
+    if (error instanceof DatabaseError) {
+      if (error.code === "DUPLICATE_KEY") {
+        throw new Error("User already exists");
+      }
+      if (error.code === "CONNECTION_LOST") {
+        await db.reconnect();
+        return createUser(data);
+      }
+    }
+    throw error;
+  }
+}
+```
+
+### Global error handler
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+
+client.on("error", (error) => {
+  console.error(`[${error.code}] ${error.message}`);
+  
+  // Log to external service
+  logger.error({
+    code: error.code,
+    message: error.message,
+    stack: error.stack
+  });
+});
+
+client.start();
+```
