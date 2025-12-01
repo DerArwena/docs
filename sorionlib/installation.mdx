@@ -1,0 +1,70 @@
+---
+title: Installation
+description: How to install Sorionlib in your project
+---
+
+## Prerequisites
+
+Before installing Sorionlib, ensure you have:
+
+- **Node.js** version 16.0.0 or higher
+- **npm** or **yarn** package manager
+
+## Install via npm
+
+```bash
+npm install sorionlib
+```
+
+## Install via yarn
+
+```bash
+yarn add sorionlib
+```
+
+## Install via pnpm
+
+```bash
+pnpm add sorionlib
+```
+
+## Dependencies
+
+Sorionlib has minimal dependencies. The following are installed automatically:
+
+| Package | Purpose |
+|---------|---------|
+| `axios` | HTTP client for API requests |
+| `dotenv` | Environment variable management |
+
+## Verify installation
+
+After installation, verify it works by creating a test file:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+console.log("Sorionlib installed successfully!");
+```
+
+Run the file:
+
+```bash
+node test.js
+```
+
+## TypeScript setup
+
+Sorionlib includes TypeScript definitions out of the box. No additional `@types` packages are required.
+
+```ts
+import { Sorion, SorionConfig } from "sorionlib";
+
+const config: SorionConfig = {
+  logging: true,
+  prefix: "!"
+};
+
+const client = new Sorion(config);
+```
