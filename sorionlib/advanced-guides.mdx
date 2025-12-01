@@ -1,0 +1,328 @@
+---
+title: Advanced guides
+description: Advanced usage patterns and techniques for Sorionlib
+---
+
+## Creating custom modules
+
+Extend Sorionlib with your own modules:
+
+```js
+import { Sorion, Module } from "sorionlib";
+
+class MyModule extends Module {
+  constructor(client) {
+    super(client);
+    this.name = "mymodule";
+  }
+
+  async initialize() {
+    console.log("MyModule initialized");
+  }
+
+  async shutdown() {
+    console.log("MyModule shutting down");
+  }
+
+  myMethod() {
+    return "Hello from MyModule";
+  }
+}
+
+const client = new Sorion();
+client.registerModule(MyModule);
+
+await client.start();
+
+// Access your module
+console.log(client.modules.mymodule.myMethod());
+```
+
+## Extending the library
+
+### Custom utilities
+
+Add your own utility functions:
+
+```js
+import { utils } from "sorionlib";
+
+// Add custom utility
+utils.extend("myUtil", (value) => {
+  return value.toUpperCase();
+});
+
+// Use it
+console.log(utils.myUtil("hello")); // "HELLO"
+```
+
+### Custom error classes
+
+Create domain-specific errors:
+
+```js
+import { SorionError } from "sorionlib";
+
+class PaymentError extends SorionError {
+  constructor(message, code, transactionId) {
+    super(message, code);
+    this.transactionId = transactionId;
+  }
+}
+
+throw new PaymentError(
+  "Payment failed",
+  "INSUFFICIENT_FUNDS",
+  "txn_123"
+);
+```
+
+### Custom API client methods
+
+Extend the API client:
+
+```js
+import { ApiClient } from "sorionlib";
+
+class MyApiClient extends ApiClient {
+  async getUsers(params) {
+    return this.get("/users", params);
+  }
+
+  async createUser(data) {
+    return this.post("/users", data);
+  }
+
+  async uploadFile(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return this.post("/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+  }
+}
+
+const api = new MyApiClient({
+  baseUrl: "https://api.example.com"
+});
+
+const users = await api.getUsers({ limit: 10 });
+```
+
+## Performance optimizations
+
+### Connection pooling
+
+```js
+import { MongoDB } from "sorionlib";
+
+const db = new MongoDB({
+  uri: process.env.MONGODB_URI,
+  database: "myapp",
+  poolSize: 20,           // Increase pool size
+  maxIdleTimeMS: 30000,   // Close idle connections
+  waitQueueTimeoutMS: 5000
+});
+```
+
+### Caching
+
+```js
+import { Sorion, Cache } from "sorionlib";
+
+const client = new Sorion();
+const cache = new Cache({ ttl: 60000 }); // 1 minute TTL
+
+async function getUser(id) {
+  const cached = cache.get(`user:${id}`);
+  if (cached) return cached;
+
+  const user = await api.get(`/users/${id}`);
+  cache.set(`user:${id}`, user);
+  return user;
+}
+```
+
+### Batch operations
+
+```js
+import { MongoDB } from "sorionlib";
+
+const db = new MongoDB({ uri: "...", database: "myapp" });
+
+// Instead of multiple inserts
+const users = [
+  { name: "User 1" },
+  { name: "User 2" },
+  { name: "User 3" }
+];
+
+// Use bulk insert
+await db.collection("users").insertMany(users);
+
+// Bulk update
+await db.collection("users").bulkWrite([
+  { updateOne: { filter: { _id: id1 }, update: { $set: { active: true } } } },
+  { updateOne: { filter: { _id: id2 }, update: { $set: { active: false } } } }
+]);
+```
+
+## Using Sorionlib in large projects
+
+### Project structure
+
+```
+my-project/
+├── src/
+│   ├── modules/
+│   │   ├── users/
+│   │   │   ├── commands.js
+│   │   │   ├── events.js
+│   │   │   └── index.js
+│   │   └── payments/
+│   │       ├── commands.js
+│   │       ├── events.js
+│   │       └── index.js
+│   ├── utils/
+│   │   └── helpers.js
+│   ├── config/
+│   │   └── index.js
+│   └── index.js
+├── sorion.config.js
+└── package.json
+```
+
+### Module loading
+
+```js
+// src/index.js
+import { Sorion } from "sorionlib";
+import { UsersModule } from "./modules/users";
+import { PaymentsModule } from "./modules/payments";
+
+const client = new Sorion();
+
+client.registerModule(UsersModule);
+client.registerModule(PaymentsModule);
+
+await client.start();
+```
+
+### Dependency injection
+
+```js
+import { Sorion, Container } from "sorionlib";
+
+const container = new Container();
+
+// Register services
+container.register("logger", () => new Logger());
+container.register("cache", () => new Cache());
+container.register("userService", (c) => new UserService(c.get("cache")));
+
+const client = new Sorion({ container });
+
+// Access services in modules
+class MyModule extends Module {
+  async initialize() {
+    this.userService = this.client.container.get("userService");
+  }
+}
+```
+
+## Async patterns
+
+### Promises
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+
+client.start()
+  .then(() => console.log("Started"))
+  .catch((error) => console.error("Failed:", error));
+```
+
+### Async/await
+
+```js
+import { Sorion } from "sorionlib";
+
+async function main() {
+  const client = new Sorion();
+
+  try {
+    await client.start();
+    console.log("Started");
+  } catch (error) {
+    console.error("Failed:", error);
+  }
+}
+
+main();
+```
+
+### Parallel operations
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+
+// Run operations in parallel
+const [users, posts, comments] = await Promise.all([
+  api.get("/users"),
+  api.get("/posts"),
+  api.get("/comments")
+]);
+
+// With error handling
+const results = await Promise.allSettled([
+  api.get("/users"),
+  api.get("/posts"),
+  api.get("/comments")
+]);
+
+results.forEach((result, index) => {
+  if (result.status === "fulfilled") {
+    console.log(`Request ${index} succeeded:`, result.value);
+  } else {
+    console.log(`Request ${index} failed:`, result.reason);
+  }
+});
+```
+
+### Sequential operations
+
+```js
+async function processUsers(userIds) {
+  const results = [];
+
+  for (const id of userIds) {
+    const user = await api.get(`/users/${id}`);
+    results.push(user);
+  }
+
+  return results;
+}
+```
+
+### Rate-limited operations
+
+```js
+import { utils } from "sorionlib";
+
+async function processWithRateLimit(items, fn, rateLimit = 10) {
+  const chunks = utils.chunk(items, rateLimit);
+
+  for (const chunk of chunks) {
+    await Promise.all(chunk.map(fn));
+    await utils.sleep(1000); // Wait 1 second between chunks
+  }
+}
+
+await processWithRateLimit(userIds, async (id) => {
+  await api.get(`/users/${id}`);
+});
+```
