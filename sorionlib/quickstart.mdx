@@ -1,0 +1,76 @@
+---
+title: Quick start
+description: Get up and running with Sorionlib in minutes
+---
+
+## Basic setup
+
+Create a new project and install Sorionlib:
+
+```bash
+mkdir my-project
+cd my-project
+npm init -y
+npm install sorionlib
+```
+
+## Create your first client
+
+Create an `index.js` file:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+client.start();
+```
+
+Run your application:
+
+```bash
+node index.js
+```
+
+## Add configuration
+
+Customize the client with options:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion({
+  logging: true,
+  prefix: "!"
+});
+
+client.start();
+```
+
+## Use core utilities
+
+Access built-in helper functions:
+
+```js
+import { Sorion, utils } from "sorionlib";
+
+const client = new Sorion();
+
+// String utilities
+const slug = utils.slugify("Hello World");
+console.log(slug); // "hello-world"
+
+// Array utilities
+const unique = utils.unique([1, 2, 2, 3]);
+console.log(unique); // [1, 2, 3]
+
+client.start();
+```
+
+## Next steps
+
+Now that you have Sorionlib running, explore:
+
+- [Core utilities](/sorionlib/features/core-utilities) - Helper functions and tools
+- [API client](/sorionlib/features/api-client) - Make HTTP requests
+- [Discord tools](/sorionlib/features/discord-tools) - Build Discord bots
+- [Configuration](/sorionlib/configuration) - All configuration options

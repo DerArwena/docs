@@ -1,0 +1,176 @@
+---
+title: Core utilities
+description: Built-in helper functions for common tasks
+---
+
+## Overview
+
+Sorionlib provides a collection of utility functions to simplify common programming tasks. Import them from the `utils` module.
+
+```js
+import { utils } from "sorionlib";
+```
+
+## String utilities
+
+### `slugify(text)`
+
+Converts a string to a URL-friendly slug.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `text` | `string` | The text to convert. |
+
+**Returns:** `string` - The slugified text.
+
+```js
+utils.slugify("Hello World!");
+// "hello-world"
+```
+
+### `capitalize(text)`
+
+Capitalizes the first letter of a string.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `text` | `string` | The text to capitalize. |
+
+**Returns:** `string` - The capitalized text.
+
+```js
+utils.capitalize("hello");
+// "Hello"
+```
+
+### `truncate(text, length)`
+
+Truncates a string to a specified length.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `text` | `string` | The text to truncate. |
+| `length` | `number` | Maximum length. |
+
+**Returns:** `string` - The truncated text with ellipsis if needed.
+
+```js
+utils.truncate("Hello World", 5);
+// "Hello..."
+```
+
+## Array utilities
+
+### `unique(array)`
+
+Removes duplicate values from an array.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `array` | `array` | The array to deduplicate. |
+
+**Returns:** `array` - Array with unique values.
+
+```js
+utils.unique([1, 2, 2, 3, 3, 3]);
+// [1, 2, 3]
+```
+
+### `chunk(array, size)`
+
+Splits an array into chunks of a specified size.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `array` | `array` | The array to split. |
+| `size` | `number` | Size of each chunk. |
+
+**Returns:** `array` - Array of chunks.
+
+```js
+utils.chunk([1, 2, 3, 4, 5], 2);
+// [[1, 2], [3, 4], [5]]
+```
+
+### `shuffle(array)`
+
+Randomly shuffles an array.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `array` | `array` | The array to shuffle. |
+
+**Returns:** `array` - The shuffled array.
+
+```js
+utils.shuffle([1, 2, 3, 4, 5]);
+// [3, 1, 5, 2, 4]
+```
+
+## Object utilities
+
+### `deepClone(object)`
+
+Creates a deep copy of an object.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `object` | `object` | The object to clone. |
+
+**Returns:** `object` - The cloned object.
+
+```js
+const original = { a: { b: 1 } };
+const clone = utils.deepClone(original);
+clone.a.b = 2;
+console.log(original.a.b); // 1
+```
+
+### `merge(target, source)`
+
+Deep merges two objects.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `target` | `object` | The target object. |
+| `source` | `object` | The source object. |
+
+**Returns:** `object` - The merged object.
+
+```js
+utils.merge({ a: 1 }, { b: 2 });
+// { a: 1, b: 2 }
+```
+
+## Date utilities
+
+### `formatDate(date, format)`
+
+Formats a date according to a pattern.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `date` | `Date` | The date to format. |
+| `format` | `string` | Format pattern. |
+
+**Returns:** `string` - The formatted date.
+
+```js
+utils.formatDate(new Date(), "YYYY-MM-DD");
+// "2024-01-15"
+```
+
+### `timeAgo(date)`
+
+Returns a human-readable relative time string.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `date` | `Date` | The date to compare. |
+
+**Returns:** `string` - Relative time string.
+
+```js
+utils.timeAgo(new Date(Date.now() - 60000));
+// "1 minute ago"
+```

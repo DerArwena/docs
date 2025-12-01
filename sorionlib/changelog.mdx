@@ -1,0 +1,177 @@
+---
+title: Changelog
+description: Version history and release notes for Sorionlib
+---
+
+## v2.0.0
+
+**Released:** December 2024
+
+### Breaking changes
+
+- Minimum Node.js version is now 16.0.0
+- `client.init()` renamed to `client.start()`
+- Database helpers now use async/await exclusively
+- Removed deprecated `utils.format()` method
+
+### Added
+
+- TypeScript 5.0 support
+- New `Cache` module for in-memory caching
+- Discord slash command support
+- MariaDB connection pooling
+- Custom error classes with error codes
+
+### Improved
+
+- API client retry logic
+- Database connection handling
+- Event system performance
+- Documentation and examples
+
+### Fixed
+
+- Memory leak in event listeners
+- Race condition in database reconnection
+- Incorrect error codes for timeout errors
+
+---
+
+## v1.5.0
+
+**Released:** October 2024
+
+### Added
+
+- `utils.chunk()` for splitting arrays
+- `utils.shuffle()` for randomizing arrays
+- Database transaction support
+- API client interceptors
+
+### Improved
+
+- Reduced bundle size by 20%
+- Better error messages
+- Faster startup time
+
+### Fixed
+
+- Discord bot not reconnecting after disconnect
+- API client not respecting timeout option
+- Database query escaping issues
+
+---
+
+## v1.4.0
+
+**Released:** August 2024
+
+### Added
+
+- MongoDB support
+- `utils.deepClone()` method
+- Configuration file support
+- Environment variable configuration
+
+### Improved
+
+- API client error handling
+- Discord command parsing
+- Documentation
+
+### Fixed
+
+- Memory leak in API client
+- Incorrect date formatting
+- Missing TypeScript types
+
+---
+
+## v1.3.0
+
+**Released:** June 2024
+
+### Added
+
+- Discord middleware system
+- `utils.merge()` for deep object merging
+- Debug mode
+- Custom event support
+
+### Improved
+
+- API client performance
+- Error messages
+- TypeScript definitions
+
+### Fixed
+
+- Discord bot crash on invalid commands
+- API client not sending headers
+- Configuration not loading
+
+---
+
+## v1.2.0
+
+**Released:** April 2024
+
+### Added
+
+- MariaDB support
+- `utils.truncate()` method
+- API client authentication options
+- Discord event system
+
+### Improved
+
+- Startup performance
+- Memory usage
+- Error handling
+
+### Fixed
+
+- API client timeout not working
+- Discord bot prefix matching
+- Database connection leaks
+
+---
+
+## v1.1.0
+
+**Released:** February 2024
+
+### Added
+
+- Discord command builder
+- `utils.slugify()` method
+- `utils.capitalize()` method
+- API client retry support
+
+### Improved
+
+- Documentation
+- TypeScript support
+- Error messages
+
+### Fixed
+
+- API client not parsing JSON responses
+- Discord bot not handling mentions
+- Configuration validation
+
+---
+
+## v1.0.0
+
+**Released:** January 2024
+
+Initial release of Sorionlib.
+
+### Features
+
+- Core utilities module
+- API client
+- Basic Discord bot support
+- Configuration system
+- TypeScript support

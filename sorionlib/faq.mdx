@@ -1,0 +1,308 @@
+---
+title: FAQ
+description: Frequently asked questions about Sorionlib
+---
+
+## General
+
+### Why is my client not starting?
+
+Check these common issues:
+
+1. **Missing configuration** - Ensure required options are set:
+
+```js
+const client = new Sorion({
+  // Required for Discord bots
+  discord: {
+    token: process.env.DISCORD_TOKEN
+  }
+});
+```
+
+2. **Invalid token** - Verify your Discord token is correct and not expired.
+
+3. **Missing intents** - Discord requires specific intents:
+
+```js
+const client = new Sorion({
+  discord: {
+    token: process.env.DISCORD_TOKEN,
+    intents: ["Guilds", "GuildMessages", "MessageContent"]
+  }
+});
+```
+
+4. **Network issues** - Check your internet connection and firewall settings.
+
+### How do I enable debug mode?
+
+Set the `debug` option to `true`:
+
+```js
+const client = new Sorion({
+  debug: true
+});
+```
+
+Or use an environment variable:
+
+```bash
+SORION_DEBUG=true node index.js
+```
+
+Debug mode outputs detailed logs including:
+- API request/response details
+- Database queries
+- Event emissions
+- Internal state changes
+
+### Can I extend the event system?
+
+Yes, you can create custom events:
+
+```js
+import { Sorion, EventEmitter } from "sorionlib";
+
+const client = new Sorion();
+
+// Emit custom events
+client.emit("customEvent", { data: "value" });
+
+// Listen to custom events
+client.on("customEvent", (payload) => {
+  console.log("Custom event received:", payload);
+});
+```
+
+You can also create typed events with TypeScript:
+
+```ts
+interface MyEvents {
+  userCreated: (user: User) => void;
+  orderPlaced: (order: Order) => void;
+}
+
+const client = new Sorion<MyEvents>();
+
+client.on("userCreated", (user) => {
+  // user is typed as User
+});
+```
+
+## Installation
+
+### What Node.js version is required?
+
+Sorionlib requires Node.js 16.0.0 or higher. Check your version:
+
+```bash
+node --version
+```
+
+### How do I update Sorionlib?
+
+```bash
+npm update sorionlib
+```
+
+Or install a specific version:
+
+```bash
+npm install sorionlib@latest
+```
+
+### Are there any peer dependencies?
+
+No, Sorionlib bundles all required dependencies. However, for Discord functionality, you may want to install `discord.js` for additional features:
+
+```bash
+npm install discord.js
+```
+
+## API client
+
+### How do I handle rate limiting?
+
+The API client handles rate limiting automatically with retries. You can customize the behavior:
+
+```js
+const api = new ApiClient({
+  baseUrl: "https://api.example.com",
+  retries: 5,
+  retryDelay: 1000 // Wait 1 second between retries
+});
+```
+
+### How do I add custom headers to all requests?
+
+```js
+const api = new ApiClient({
+  baseUrl: "https://api.example.com",
+  headers: {
+    "X-Custom-Header": "value",
+    "Authorization": "Bearer token"
+  }
+});
+```
+
+### How do I handle file uploads?
+
+```js
+const formData = new FormData();
+formData.append("file", fileBuffer, "filename.png");
+
+await api.post("/upload", formData, {
+  headers: {
+    "Content-Type": "multipart/form-data"
+  }
+});
+```
+
+## Database
+
+### How do I connect to multiple databases?
+
+Create multiple instances:
+
+```js
+const primaryDb = new MongoDB({
+  uri: process.env.PRIMARY_DB_URI,
+  database: "primary"
+});
+
+const secondaryDb = new MongoDB({
+  uri: process.env.SECONDARY_DB_URI,
+  database: "secondary"
+});
+
+await Promise.all([
+  primaryDb.connect(),
+  secondaryDb.connect()
+]);
+```
+
+### How do I handle connection failures?
+
+Listen to connection events:
+
+```js
+const db = new MongoDB({ uri: "...", database: "myapp" });
+
+db.on("error", (error) => {
+  console.error("Database error:", error);
+});
+
+db.on("disconnected", async () => {
+  console.log("Disconnected, attempting reconnect...");
+  await db.reconnect();
+});
+
+db.on("reconnected", () => {
+  console.log("Reconnected successfully");
+});
+```
+
+## Discord
+
+### How do I register slash commands?
+
+```js
+const bot = new DiscordBot({
+  token: process.env.DISCORD_TOKEN
+});
+
+// Add slash commands
+bot.addCommand(
+  new Command()
+    .setName("ping")
+    .setSlash(true)
+    .setHandler(async (ctx) => {
+      await ctx.reply("Pong!");
+    })
+);
+
+// Register with Discord
+await bot.registerSlashCommands();
+```
+
+### How do I handle button interactions?
+
+```js
+bot.on("interactionCreate", async (interaction) => {
+  if (!interaction.isButton()) return;
+
+  if (interaction.customId === "confirm") {
+    await interaction.reply("Confirmed!");
+  }
+});
+```
+
+### How do I create embeds?
+
+```js
+import { Embed } from "sorionlib";
+
+const embed = new Embed()
+  .setTitle("Hello")
+  .setDescription("This is an embed")
+  .setColor("#00ff00")
+  .addField("Field 1", "Value 1")
+  .setFooter("Footer text");
+
+await ctx.reply({ embeds: [embed] });
+```
+
+## Troubleshooting
+
+### I'm getting "Cannot find module 'sorionlib'"
+
+Ensure Sorionlib is installed:
+
+```bash
+npm install sorionlib
+```
+
+Check your import statement matches your module system:
+
+```js
+// ES Modules
+import { Sorion } from "sorionlib";
+
+// CommonJS
+const { Sorion } = require("sorionlib");
+```
+
+### TypeScript types are not working
+
+Ensure you have TypeScript 4.5 or higher:
+
+```bash
+npm install typescript@latest
+```
+
+Types are included in the package, no `@types` package needed.
+
+### Memory usage is high
+
+1. **Close unused connections:**
+
+```js
+await db.disconnect();
+```
+
+2. **Clear caches:**
+
+```js
+cache.clear();
+```
+
+3. **Use streaming for large datasets:**
+
+```js
+const cursor = db.collection("users").find({}).cursor();
+
+for await (const user of cursor) {
+  // Process one at a time
+}
+```

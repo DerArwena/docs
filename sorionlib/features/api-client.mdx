@@ -1,0 +1,158 @@
+---
+title: API client
+description: Make HTTP requests with the built-in API client
+---
+
+## Overview
+
+Sorionlib includes a powerful API client for making HTTP requests with built-in authentication, retries, and error handling.
+
+```js
+import { ApiClient } from "sorionlib";
+
+const api = new ApiClient({
+  baseUrl: "https://api.example.com"
+});
+```
+
+## Authentication
+
+### API key authentication
+
+```js
+const api = new ApiClient({
+  baseUrl: "https://api.example.com",
+  apiKey: "your-api-key"
+});
+```
+
+### Bearer token authentication
+
+```js
+const api = new ApiClient({
+  baseUrl: "https://api.example.com",
+  token: "your-bearer-token"
+});
+```
+
+### Custom headers
+
+```js
+const api = new ApiClient({
+  baseUrl: "https://api.example.com",
+  headers: {
+    "X-Custom-Header": "value"
+  }
+});
+```
+
+## Available methods
+
+### `get(endpoint, params)`
+
+Makes a GET request.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `endpoint` | `string` | The API endpoint. |
+| `params` | `object` | Query parameters (optional). |
+
+**Returns:** `Promise<object>` - The response data.
+
+```js
+const users = await api.get("/users", { limit: 10 });
+```
+
+### `post(endpoint, data)`
+
+Makes a POST request.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `endpoint` | `string` | The API endpoint. |
+| `data` | `object` | Request body. |
+
+**Returns:** `Promise<object>` - The response data.
+
+```js
+const user = await api.post("/users", {
+  name: "John",
+  email: "john@example.com"
+});
+```
+
+### `put(endpoint, data)`
+
+Makes a PUT request.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `endpoint` | `string` | The API endpoint. |
+| `data` | `object` | Request body. |
+
+**Returns:** `Promise<object>` - The response data.
+
+```js
+const updated = await api.put("/users/123", {
+  name: "John Updated"
+});
+```
+
+### `delete(endpoint)`
+
+Makes a DELETE request.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `endpoint` | `string` | The API endpoint. |
+
+**Returns:** `Promise<object>` - The response data.
+
+```js
+await api.delete("/users/123");
+```
+
+## Error handling
+
+The API client throws typed errors that you can catch and handle:
+
+```js
+import { ApiClient, ApiError } from "sorionlib";
+
+const api = new ApiClient({
+  baseUrl: "https://api.example.com"
+});
+
+try {
+  const data = await api.get("/users");
+} catch (error) {
+  if (error instanceof ApiError) {
+    console.log(error.status);  // HTTP status code
+    console.log(error.message); // Error message
+    console.log(error.code);    // Error code
+  }
+}
+```
+
+### Common error codes
+
+| Code | Description |
+|------|-------------|
+| `NETWORK_ERROR` | Network connection failed. |
+| `TIMEOUT` | Request timed out. |
+| `UNAUTHORIZED` | Authentication failed. |
+| `FORBIDDEN` | Access denied. |
+| `NOT_FOUND` | Resource not found. |
+| `RATE_LIMITED` | Too many requests. |
+| `SERVER_ERROR` | Server error occurred. |
+
+## Configuration options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `baseUrl` | `string` | - | Base URL for all requests. |
+| `apiKey` | `string` | - | API key for authentication. |
+| `token` | `string` | - | Bearer token for authentication. |
+| `headers` | `object` | `{}` | Custom headers. |
+| `timeout` | `number` | `30000` | Request timeout in ms. |
+| `retries` | `number` | `3` | Number of retry attempts. |

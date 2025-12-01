@@ -1,0 +1,269 @@
+---
+title: Database helpers
+description: Simplified database connections and operations
+---
+
+## Overview
+
+Sorionlib provides database helpers for MongoDB and MariaDB with simplified connection management and CRUD operations.
+
+## Supported databases
+
+| Database | Status |
+|----------|--------|
+| MongoDB | Supported |
+| MariaDB | Supported |
+| MySQL | Supported |
+| PostgreSQL | Coming soon |
+
+## MongoDB
+
+### Connection
+
+```js
+import { MongoDB } from "sorionlib";
+
+const db = new MongoDB({
+  uri: "mongodb://localhost:27017",
+  database: "myapp"
+});
+
+await db.connect();
+```
+
+### CRUD operations
+
+**Create:**
+
+```js
+const user = await db.collection("users").create({
+  name: "John",
+  email: "john@example.com",
+  createdAt: new Date()
+});
+
+console.log(user._id);
+```
+
+**Read:**
+
+```js
+// Find one
+const user = await db.collection("users").findOne({
+  email: "john@example.com"
+});
+
+// Find many
+const users = await db.collection("users").find({
+  active: true
+});
+
+// Find with options
+const recentUsers = await db.collection("users").find(
+  { active: true },
+  { sort: { createdAt: -1 }, limit: 10 }
+);
+```
+
+**Update:**
+
+```js
+// Update one
+await db.collection("users").updateOne(
+  { _id: userId },
+  { $set: { name: "John Updated" } }
+);
+
+// Update many
+await db.collection("users").updateMany(
+  { active: false },
+  { $set: { archived: true } }
+);
+```
+
+**Delete:**
+
+```js
+// Delete one
+await db.collection("users").deleteOne({ _id: userId });
+
+// Delete many
+await db.collection("users").deleteMany({ archived: true });
+```
+
+### Connection example
+
+```js
+import { MongoDB } from "sorionlib";
+
+const db = new MongoDB({
+  uri: process.env.MONGODB_URI,
+  database: "myapp"
+});
+
+async function main() {
+  await db.connect();
+  console.log("Connected to MongoDB");
+
+  const users = await db.collection("users").find({});
+  console.log(`Found ${users.length} users`);
+
+  await db.disconnect();
+}
+
+main();
+```
+
+## MariaDB
+
+### Connection
+
+```js
+import { MariaDB } from "sorionlib";
+
+const db = new MariaDB({
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "password",
+  database: "myapp"
+});
+
+await db.connect();
+```
+
+### CRUD operations
+
+**Create:**
+
+```js
+const result = await db.table("users").create({
+  name: "John",
+  email: "john@example.com"
+});
+
+console.log(result.insertId);
+```
+
+**Read:**
+
+```js
+// Find one
+const user = await db.table("users").findOne({
+  email: "john@example.com"
+});
+
+// Find many
+const users = await db.table("users").find({
+  active: 1
+});
+
+// Raw query
+const results = await db.query(
+  "SELECT * FROM users WHERE created_at > ?",
+  [new Date("2024-01-01")]
+);
+```
+
+**Update:**
+
+```js
+await db.table("users").update(
+  { id: userId },
+  { name: "John Updated" }
+);
+```
+
+**Delete:**
+
+```js
+await db.table("users").delete({ id: userId });
+```
+
+### Connection example
+
+```js
+import { MariaDB } from "sorionlib";
+
+const db = new MariaDB({
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+});
+
+async function main() {
+  await db.connect();
+  console.log("Connected to MariaDB");
+
+  const users = await db.table("users").find({});
+  console.log(`Found ${users.length} users`);
+
+  await db.disconnect();
+}
+
+main();
+```
+
+## Best practices
+
+### Use connection pooling
+
+```js
+const db = new MongoDB({
+  uri: process.env.MONGODB_URI,
+  database: "myapp",
+  poolSize: 10
+});
+```
+
+### Handle connection errors
+
+```js
+db.on("error", (error) => {
+  console.error("Database error:", error);
+});
+
+db.on("disconnected", () => {
+  console.log("Database disconnected, attempting reconnect...");
+});
+```
+
+### Use transactions
+
+```js
+const session = await db.startSession();
+
+try {
+  await session.startTransaction();
+  
+  await db.collection("accounts").updateOne(
+    { _id: fromAccount },
+    { $inc: { balance: -100 } },
+    { session }
+  );
+  
+  await db.collection("accounts").updateOne(
+    { _id: toAccount },
+    { $inc: { balance: 100 } },
+    { session }
+  );
+  
+  await session.commitTransaction();
+} catch (error) {
+  await session.abortTransaction();
+  throw error;
+} finally {
+  session.endSession();
+}
+```
+
+### Close connections gracefully
+
+```js
+process.on("SIGINT", async () => {
+  await db.disconnect();
+  process.exit(0);
+});
+```

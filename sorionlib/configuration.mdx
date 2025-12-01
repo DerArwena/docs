@@ -1,0 +1,226 @@
+---
+title: Configuration
+description: Configure Sorionlib for your project
+---
+
+## Overview
+
+Sorionlib can be configured through constructor options, configuration files, or environment variables.
+
+## Constructor options
+
+Pass options directly when creating a client:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion({
+  logging: true,
+  prefix: "!",
+  debug: false
+});
+```
+
+## Configuration options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `logging` | `boolean` | `false` | Enable console logging. |
+| `prefix` | `string` | `"!"` | Command prefix for Discord bots. |
+| `debug` | `boolean` | `false` | Enable debug mode. |
+| `timeout` | `number` | `30000` | Default timeout in milliseconds. |
+| `retries` | `number` | `3` | Number of retry attempts. |
+| `locale` | `string` | `"en"` | Default locale for messages. |
+
+## Configuration file
+
+Create a `sorion.config.js` file in your project root:
+
+```js
+// sorion.config.js
+module.exports = {
+  logging: true,
+  prefix: "!",
+  debug: process.env.NODE_ENV === "development",
+  timeout: 30000,
+  retries: 3
+};
+```
+
+The client automatically loads this file:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+// Config loaded from sorion.config.js
+```
+
+## Environment variables
+
+Sorionlib reads from environment variables prefixed with `SORION_`:
+
+```bash
+# .env
+SORION_LOGGING=true
+SORION_PREFIX=!
+SORION_DEBUG=false
+SORION_TIMEOUT=30000
+```
+
+Environment variables override config file values:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion();
+// Reads from .env if present
+```
+
+## Configuration priority
+
+Configuration is merged in this order (later overrides earlier):
+
+1. Default values
+2. Configuration file (`sorion.config.js`)
+3. Environment variables (`SORION_*`)
+4. Constructor options
+
+```js
+// sorion.config.js sets logging: false
+// .env sets SORION_LOGGING=true
+// Constructor sets logging: false
+
+const client = new Sorion({ logging: false });
+// Result: logging is false (constructor wins)
+```
+
+## Module-specific configuration
+
+### API client
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion({
+  api: {
+    baseUrl: "https://api.example.com",
+    timeout: 10000,
+    retries: 5,
+    headers: {
+      "X-API-Version": "2"
+    }
+  }
+});
+```
+
+### Discord bot
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion({
+  discord: {
+    token: process.env.DISCORD_TOKEN,
+    prefix: "!",
+    intents: ["Guilds", "GuildMessages", "MessageContent"],
+    presence: {
+      status: "online",
+      activity: {
+        type: "PLAYING",
+        name: "with Sorionlib"
+      }
+    }
+  }
+});
+```
+
+### Database
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion({
+  database: {
+    type: "mongodb",
+    uri: process.env.MONGODB_URI,
+    database: "myapp",
+    poolSize: 10
+  }
+});
+```
+
+## Inline configuration
+
+Override configuration at runtime:
+
+```js
+import { Sorion } from "sorionlib";
+
+const client = new Sorion({ logging: false });
+
+// Enable logging temporarily
+client.configure({ logging: true });
+
+// Do something with logging enabled
+await client.doSomething();
+
+// Disable logging again
+client.configure({ logging: false });
+```
+
+## Validate configuration
+
+Check if configuration is valid:
+
+```js
+import { Sorion, validateConfig } from "sorionlib";
+
+const config = {
+  logging: true,
+  prefix: "!",
+  timeout: -1 // Invalid
+};
+
+const result = validateConfig(config);
+
+if (!result.valid) {
+  console.log(result.errors);
+  // [{ field: "timeout", message: "Must be a positive number" }]
+}
+```
+
+## Example configuration
+
+Complete configuration example:
+
+```js
+// sorion.config.js
+module.exports = {
+  // General
+  logging: process.env.NODE_ENV !== "production",
+  debug: process.env.NODE_ENV === "development",
+  locale: "en",
+
+  // API client
+  api: {
+    baseUrl: process.env.API_URL,
+    timeout: 30000,
+    retries: 3
+  },
+
+  // Discord bot
+  discord: {
+    token: process.env.DISCORD_TOKEN,
+    prefix: "!",
+    intents: ["Guilds", "GuildMessages"]
+  },
+
+  // Database
+  database: {
+    type: "mongodb",
+    uri: process.env.MONGODB_URI,
+    database: "myapp"
+  }
+};
+```

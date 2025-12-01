@@ -48,6 +48,45 @@
         ]
       },
       {
+        "tab": "Sorionlib",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "sorionlib/introduction",
+              "sorionlib/installation",
+              "sorionlib/quickstart"
+            ]
+          },
+          {
+            "group": "Features & modules",
+            "pages": [
+              "sorionlib/features/core-utilities",
+              "sorionlib/features/api-client",
+              "sorionlib/features/discord-tools",
+              "sorionlib/features/database-helpers",
+              "sorionlib/features/error-handling"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "sorionlib/configuration",
+              "sorionlib/advanced-guides",
+              "sorionlib/faq"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "sorionlib/changelog",
+              "sorionlib/contributing",
+              "sorionlib/license"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "API reference",
         "groups": [
           {
